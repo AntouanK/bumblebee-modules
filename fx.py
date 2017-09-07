@@ -33,13 +33,19 @@ class Module(bumblebee.engine.Module):
             try:
                 self._nextcheck = int(time.time()) + self._interval*60
                 price_url = "http://api.fixer.io/latest?symbols=USD,EUR&base=GBP" 
-                price_json = json.loads( requests.get(price_url).text )
-                gbpeur = str(price_json['rates']['EUR'])
-                gbpusd = str(price_json['rates']['USD'])
+                try:
+                    price_json = json.loads( requests.get(price_url).text )
+                    gbpeur = str(price_json['rates']['EUR'])
+                    gbpusd = str(price_json['rates']['USD'])
+                except ValueError:
+                    gbpeur = "-"
+                    gbpusd = "-"
+
                 self._price = "£/€ " + gbpeur + " | £/$ " + gbpusd
                 self._valid = True
             except RequestException:
-                self._valid = False
+                self._price = "£/€ - | £/$ -"
+                self._valid = True
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
